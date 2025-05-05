@@ -10,8 +10,8 @@ from datetime import datetime
 
 
 
-class AgentPro:
-    def __init__(self, model: str = None, tools: List[Tool] = None, max_iterations: int = 20):
+class ReactAgent:
+    def __init__(self, model: str = None, tools: List[Tool] = None, custom_system_prompt: str = None, max_iterations: int = 20):
 
         if model:
             self.client = openai.OpenAI(api_key=model)
@@ -28,30 +28,42 @@ class AgentPro:
         tool_names = ", ".join(tool.action_type for tool in self.tools)
 
         # Get current date here
-        current_date = datetime.now().strftime("%B %d, %Y") 
+        current_date = datetime.now().strftime("%B %d, %Y")
 
-        self.system_prompt = f"""You are an AI assistant that follows the ReAct (Reasoning + Acting) pattern.
+        # Default opening sentence
+        default_opening = "You are an AI assistant that follows the ReAct (Reasoning + Acting) pattern."
+        # Use custom system prompt if provided, otherwise use the default
+        if custom_system_prompt:
+            user_system_prompt = custom_system_prompt
+        else:
+            user_system_prompt = default_opening
+
+        self.system_prompt = f"""{user_system_prompt}
+        
 Your goal is to help users by breaking down complex tasks into a series of thought-out steps and actions.
 
 You have access to these tools: {tool_names}
 
 {tools_description}
 
-For each iteration, follow these steps:
-1. Thought: Think about what action is required.
-2. Action: Take an appropriate Action.
+Your task is to:
+1. Think about what action is required — Thought.
+2. Take an appropriate action — Action.
 3. Repeat Thought/Action as needed until you find the final answer.
 
-Format of Thought and Action:
+### Format (Choose only one per step)
+
+Option 1 — When action is needed:
 Thought: Your reasoning about action
 Action: {{"action_type": "<action_type>", "input": <input_data>}}
 
-Format once you find the final answer:
+Option 2 — When you're confident in the final response:
 Thought: Now I know the answer that will be given in Final Answer.
 Final Answer: Provide a complete, well-structured response that directly addresses the original question.
 
-Important:
+### Important:
 - Think step-by-step
+- Never provide both Action and Final Answer or multiple Action in the same step.
 - Use available tools wisely
 - If stuck, reflect and retry
 - Do no hallucinate and use tools if needed

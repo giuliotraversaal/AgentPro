@@ -55,7 +55,7 @@ This starts an interactive session with the agent where you can enter queries. -
 ### Basic Usage
 ```python
 import os
-from agentpro import AgentPro
+from agentpro import ReactAgent
 from agentpro.tools import DuckDuckGoTool
 
 openai_api_key = os.getenv("OPENAI_API_KEY", None) # Make sure OpenAI key is set
@@ -64,7 +64,7 @@ openai_api_key = os.getenv("OPENAI_API_KEY", None) # Make sure OpenAI key is set
 tools = [DuckDuckGoTool()]
 
 # Initialize agent
-agent = AgentPro(model=openai_api_key, tools=tools)
+agent = ReactAgent(model=openai_api_key, tools=tools)
 
 # Run a query
 query = "Search the latest advancements in artificial intelligence"
@@ -201,7 +201,7 @@ from typing import Any
 
 class MyCustomTool(Tool):
     name: str = "My Custom Tool"  # Human-readable name for the tool (used in documentation and debugging)
-    description: str = "Descriptio"  # Brief summary explaining the tool's functionality for agent
+    description: str = "Description"  # Brief summary explaining the tool's functionality for agent
     action_type: str = "my_custom_action"  # Unique identifier for the tool; lowercase with underscores for agent; avoid spaces, digits, special characters
     input_format: str = "Description of expected input format, e.g., a string query."  # Instruction on what kind of input the tool expects with example
 
@@ -215,13 +215,13 @@ After creating your custom tool, you can initialize it and pass it to AgentPro l
 
 ```python
 import os
-from agentpro import AgentPro
+from agentpro import ReactAgent
 
 # Instantiate your custom tools
 tools = [MyCustomTool()]
 
-# Create AgentPro agent
-myagent = AgentPro(model=os.getenv("OPENAI_API_KEY", None),tools=tools)
+# Create AgentPro React agent
+myagent = ReactAgent(model=os.getenv("OPENAI_API_KEY", None),tools=tools)
 
 # Run a query
 query = "Use the custom tool to perform a task."
@@ -246,6 +246,7 @@ agentpro/
 │       ├── userinput_tool.py
 │       ├── ares_tool.py
 │       ├── traversaalpro_rag_tool.py
+│       ├── slide_generation_tool.py
 │       └── yfinance_tool.py
 │   └── examples/
 │       ├── quick_start.ipynb

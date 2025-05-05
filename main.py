@@ -1,22 +1,30 @@
 import os
-from agentpro import AgentPro
-from agentpro.tools import DuckDuckGoTool, CalculateTool, UserInputTool, AresInternetTool, YFinanceTool, TraversaalProRAGTool
+import argparse
+from agentpro import ReactAgent
+from agentpro.tools import DuckDuckGoTool, CalculateTool, UserInputTool, AresInternetTool, YFinanceTool, TraversaalProRAGTool, SlideGenerationTool
 
 
 def main():
     try:
+        # Set up argument parser
+        parser = argparse.ArgumentParser(description='Run AgentPro with a query')
+        parser.add_argument('input_text', type=str, help='The query to process')
+        parser.add_argument('--system_prompt', type=str, help='Custom system prompt for the agent', default=None)
+        args = parser.parse_args()
+        
         # Instantiate your tools
         tools = [
             DuckDuckGoTool(),
             CalculateTool(),
             UserInputTool(),
             YFinanceTool(),
+            SlideGenerationTool(),
             AresInternetTool(api_key=os.getenv("ARES_API_KEY", None)),
-            TraversaalProRAGTool(api_key=os.getenv("TRAVERSAAL_PRO_API_KEY", None), document_info="employee_safety_manual")
+            # TraversaalProRAGTool(api_key=os.getenv("TRAVERSAAL_PRO_API_KEY", None), document_names="employee_safety_manual"),
         ]
-        myagent = AgentPro(model=os.getenv("OPENAI_API_KEY", None), tools=tools, max_iterations=20)
+        myagent = ReactAgent(model=os.getenv("OPENAI_API_KEY", None), tools=tools, custom_system_prompt=args.system_prompt, max_iterations=20)
         
-        query = input("Enter your Query : ")
+        query = args.input_text
         response = myagent.run(query)
 
         print("=" * 50 + " FINAL Thought Process:")
@@ -37,4 +45,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
